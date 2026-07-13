@@ -1,0 +1,222 @@
+﻿<Window x:Class="CargoPlanApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:converters="clr-namespace:CargoPlanApp.Converters"
+        xmlns:vm="clr-namespace:CargoPlanApp.ViewModels"
+        xmlns:views="clr-namespace:CargoPlanApp.Views"
+        xmlns:local="clr-namespace:CargoPlanApp"
+        Title="MT RINA Cargo Plan" Height="800" Width="1200"
+        WindowStyle="None" AllowsTransparency="True"
+        ResizeMode="NoResize" Background="Transparent"
+        Loaded="Window_Loaded"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}">
+    <Window.Resources>
+        <Style TargetType="{x:Type DataGridCell}" x:Key="EditableCellStyle">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <EventSetter Event="GotFocus" Handler="DataGridCell_GotFocus"/>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource MaterialDesignSelection}"/>
+                    <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="CaptionButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="46"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource MaterialDesignTextAreaBorder}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Window.DataContext>
+        <vm:MainViewModel x:Name="ViewModel"/>
+    </Window.DataContext>
+    <Border Background="{DynamicResource MaterialDesignPaper}" CornerRadius="0" BorderBrush="{DynamicResource MaterialDesignTextAreaBorder}" BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <!-- Заголовок и меню -->
+            <Grid Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="32"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <!-- Кастомный заголовок -->
+                <Grid Background="{DynamicResource MaterialDesignDarkBackground}" Height="32" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Image Grid.Column="0" Source="/Resources/icon.png" Width="20" Height="20" Margin="10,0,0,0" Visibility="Collapsed"/>
+                    <TextBlock Grid.Column="1" Text="MT RINA Cargo Plan" VerticalAlignment="Center" Margin="10,0,0,0"
+                               Foreground="{DynamicResource MaterialDesignBody}" FontWeight="SemiBold"/>
+                    <StackPanel Grid.Column="2" Orientation="Horizontal">
+                        <Button x:Name="MinimizeButton" Content="&#xE921;" Style="{StaticResource CaptionButtonStyle}" Click="MinimizeButton_Click"/>
+                        <Button x:Name="CloseButton" Content="&#xE8BB;" Style="{StaticResource CaptionButtonStyle}" Click="CloseButton_Click"/>
+                    </StackPanel>
+                </Grid>
+                
+            </Grid>
+            <!-- Панель инструментов -->
+            <ToolBar Grid.Row="1" Style="{StaticResource MaterialDesignToolBar}">
+                <Button Content="New" Command="{Binding NewCommand}" Style="{StaticResource MaterialDesignFlatButton}"/>
+                <Button Content="Open" Command="{Binding OpenCommand}" Style="{StaticResource MaterialDesignFlatButton}"/>
+                <Button Content="Save" Command="{Binding SaveCommand}" Style="{StaticResource MaterialDesignFlatButton}"/>
+                <Button Content="Print" Command="{Binding PrintCommand}" Style="{StaticResource MaterialDesignFlatButton}"/>
+               
+                <Button Content="Products" Command="{Binding ManageProductsCommand}" Style="{StaticResource MaterialDesignFlatButton}"/>
+                <Button Content="Tanks' capacities" Command="{Binding SetMaxVolumesCommand}" Style="{StaticResource MaterialDesignFlatButton}"/>
+            </ToolBar>
+            <!-- Основной контент -->
+            <TabControl Grid.Row="2" x:Name="MainTabControl" Style="{StaticResource MaterialDesignTabControl}">
+                <TabItem Header="Table">
+                    <Grid Margin="10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="250"/>                             
+                            </Grid.ColumnDefinitions>
+                            <DataGrid Grid.Column="0" ItemsSource="{Binding CargoTanks}" AutoGenerateColumns="False"
+                                      CanUserAddRows="False" CanUserDeleteRows="False"
+                                      SelectionUnit="Cell"
+                                      KeyboardNavigation.TabNavigation="Cycle"
+                                      CellStyle="{StaticResource EditableCellStyle}"
+                                      Style="{StaticResource MaterialDesignDataGrid}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Tank No" Binding="{Binding TankNo}" IsReadOnly="True"/>
+                                    <DataGridTemplateColumn Header="Grade">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Border Background="{Binding ProductColor, Converter={StaticResource ColorToBrushConverter}}" CornerRadius="2">
+                                                    <ComboBox ItemsSource="{Binding DataContext.AllProductNames, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                              SelectedValue="{Binding SelectedProductName, UpdateSourceTrigger=PropertyChanged}"
+                                                              Style="{StaticResource MaterialDesignComboBox}"
+                                                              Width="120" Margin="2"
+                                                              GotFocus="CellEditControl_GotFocus"/>
+                                                </Border>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Density at 15°C" Binding="{Binding Density15, StringFormat=F4}" IsReadOnly="True"/>
+                                    <DataGridTemplateColumn Header="Weight VAC, mt">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding Weight, Converter={StaticResource StringToDoubleConverter}, ConverterParameter=F3, UpdateSourceTrigger=LostFocus}"
+                                                         Style="{StaticResource MaterialDesignTextBox}" Width="80"
+                                                         GotFocus="CellEditControl_GotFocus"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Volume, m³" Binding="{Binding Volume, StringFormat=F3}" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Tank filling, %" Binding="{Binding FillPercent, StringFormat=F1}" IsReadOnly="True"/>
+                                    <DataGridTemplateColumn Header="Temp, °C">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding Temperature, Converter={StaticResource StringToDoubleConverter}, ConverterParameter=F1, UpdateSourceTrigger=LostFocus}"
+                                                         Style="{StaticResource MaterialDesignTextBox}" Width="80"
+                                                         GotFocus="CellEditControl_GotFocus"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Real density" Binding="{Binding DensityAtTemp, StringFormat=F4}" IsReadOnly="True"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <GroupBox Grid.Column="1" Header="Ballast tanks" Style="{StaticResource MaterialDesignGroupBox}" Margin="5,0,0,0">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <ItemsControl ItemsSource="{Binding BallastTanks}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" Margin="2">
+                                                    <TextBlock Text="{Binding TankNo}" Width="70" VerticalAlignment="Center"/>
+                                                    <TextBox Text="{Binding WaterVolume, Converter={StaticResource StringToDoubleConverter}, ConverterParameter=F3, UpdateSourceTrigger=LostFocus}"
+                                                             Width="80" Style="{StaticResource MaterialDesignTextBox}"/>
+                                                    <TextBlock Text="м³" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                            </GroupBox>
+                        </Grid>
+                        <DataGrid Grid.Row="1" ItemsSource="{Binding GradeSummaries}" AutoGenerateColumns="False"
+                                  CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"
+                                  CellStyle="{StaticResource EditableCellStyle}"
+                                  Style="{StaticResource MaterialDesignDataGrid}" Margin="0,5,0,0">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Width="130" Header="Grade" Binding="{Binding Grade}"/>
+                                <DataGridTextColumn Width="130" Header="Density at 15°C" Binding="{Binding Density15, StringFormat=F4}"/>
+                                <DataGridTextColumn Width="130" Header="Weight VAC, mt" Binding="{Binding TotalWeight, StringFormat=F3}"/>
+                                <DataGridTextColumn Width="130" Header="Volume, m³" Binding="{Binding TotalVolume, StringFormat=F3}"/>
+                                <DataGridTextColumn Width="130" Header="Avg Temp" Binding="{Binding AvgTemperature, StringFormat=F1}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Cargo Plan">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10">
+                            <ComboBox SelectedValue="{Binding PlanType}" Width="150" Margin="5"
+                                        Style="{StaticResource MaterialDesignComboBox}"
+                                        ItemsSource="{x:Static local:MainWindow.PlanTypes}"/>
+                            <DatePicker SelectedDate="{Binding Date}" Style="{StaticResource MaterialDesignDatePicker}" Margin="5"/>
+                            <TextBox Text="{Binding Voyage}" materialDesign:HintAssist.Hint="Voyage No" Width="100" Margin="5" Style="{StaticResource MaterialDesignTextBox}"/>
+                            <TextBox Text="{Binding PortOfLoading}" materialDesign:HintAssist.Hint="Port of loading" Width="120" Margin="5" Style="{StaticResource MaterialDesignTextBox}"/>
+                            <TextBox Text="{Binding Terminal}" materialDesign:HintAssist.Hint="Terminal" Width="100" Margin="5" Style="{StaticResource MaterialDesignTextBox}"/>
+                            <TextBox Text="{Binding PortOfDischarge}" materialDesign:HintAssist.Hint="Port of discharge" Width="120" Margin="5" Style="{StaticResource MaterialDesignTextBox}"/>                            
+                            <TextBox Text="{Binding Draft, Converter={StaticResource StringToDoubleConverter}, ConverterParameter=F3}"
+                                     materialDesign:HintAssist.Hint="Maximum Draft, m" Width="80" Margin="5" Style="{StaticResource MaterialDesignTextBox}"/>
+                            <TextBox Text="{Binding WaterDensity, Converter={StaticResource StringToDoubleConverter}, ConverterParameter=F4}"
+                                     materialDesign:HintAssist.Hint="Water Density" Width="100" Margin="5" Style="{StaticResource MaterialDesignTextBox}"/>
+                        </StackPanel>
+                        <views:CargoPlanView Grid.Row="1" Margin="10"/>
+                        <DataGrid Grid.Row="2" ItemsSource="{Binding GradeSummaries}" AutoGenerateColumns="False"
+                                  CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"
+                                  CellStyle="{StaticResource EditableCellStyle}"
+                                  Style="{StaticResource MaterialDesignDataGrid}" Margin="10,0,10,5">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Width="130" Header="Grade" Binding="{Binding Grade}"/>
+                                <DataGridTextColumn Width="130" Header="Density at 15°C" Binding="{Binding Density15, StringFormat=F4}"/>
+                                <DataGridTextColumn Width="130" Header="Weight VAC, mt" Binding="{Binding TotalWeight, StringFormat=F3}"/>
+                                <DataGridTextColumn Width="130" Header="Volume, m³" Binding="{Binding TotalVolume, StringFormat=F3}"/>
+                                <DataGridTextColumn Width="130" Header="Avg Temp" Binding="{Binding AvgTemperature, StringFormat=F1}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </Border>
+</Window>

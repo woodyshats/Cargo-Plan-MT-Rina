@@ -1,0 +1,6 @@
+﻿<!-- Файл Views/CargoPlanView.xaml -->
+<UserControl x:Class="CargoPlanApp.Views.CargoPlanView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Canvas x:Name="MainCanvas" ClipToBounds="True"/>
+</UserControl>
