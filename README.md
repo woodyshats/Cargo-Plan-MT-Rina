@@ -16,6 +16,10 @@ cargo & ballast tank loading calculation, grade summary and plan printing.*
 
 <br>
 
+[![Download for Windows x64](https://img.shields.io/badge/⬇%20Download_for_Windows_x64-2EA44F?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/woodyshats/Cargo-Plan-MT-Rina/releases/tag/Win_x64_v1_01)
+
+<br>
+
 ![.NET](https://img.shields.io/badge/.NET-8.0--windows-512BD4?logo=dotnet&logoColor=white)
 ![UI](https://img.shields.io/badge/UI-WPF%20%2B%20Material%20Design-7C3AED)
 ![JSON](https://img.shields.io/badge/Data-JSON-f5c518?logo=json&logoColor=black)
