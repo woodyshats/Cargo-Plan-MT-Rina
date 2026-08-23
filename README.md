@@ -29,7 +29,7 @@ cargo & ballast tank loading calculation, grade summary and plan printing.*
 
 ### 📖 Overview
 
-**MT RINA Cargo Plan** helps a ship's officer prepare a cargo plan for a product tanker:
+**MT RINA Cargo Plan** helps a ship's Chief Officer prepare a cargo plan for a product tanker:
 enter cargo grades, weights and temperatures per tank — the app automatically calculates
 volumes, filling percentages and actual densities, shows a visual tank plan and prints a report.
 
@@ -115,7 +115,7 @@ If you close the app with unsaved changes, you will be asked to save them.
 
 ### 📖 О проекте
 
-**MT RINA Cargo Plan** помогает судовому помощнику подготовить грузовой план продуктовоза:
+**MT RINA Cargo Plan** помогает Старшему Помощнику подготовить грузовой план танкера:
 укажите сорта груза, вес и температуру по танкам — приложение автоматически рассчитает
 объёмы, проценты заполнения и фактическую плотность, отобразит визуальный план танков
 и распечатает отчёт.
