@@ -86,6 +86,7 @@
                 <Button Content="New" Command="{Binding NewCommand}" Style="{StaticResource MaterialDesignFlatButton}"/>
                 <Button Content="Open" Command="{Binding OpenCommand}" Style="{StaticResource MaterialDesignFlatButton}"/>
                 <Button Content="Save" Command="{Binding SaveCommand}" Style="{StaticResource MaterialDesignFlatButton}"/>
+                <Button Content="Save As" Command="{Binding SaveAsCommand}" Style="{StaticResource MaterialDesignFlatButton}"/>
                 <Button Content="Print" Command="{Binding PrintCommand}" Style="{StaticResource MaterialDesignFlatButton}"/>
                
                 <Button Content="Products" Command="{Binding ManageProductsCommand}" Style="{StaticResource MaterialDesignFlatButton}"/>
