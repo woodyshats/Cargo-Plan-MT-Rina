@@ -1,6 +1,6 @@
 <div align="center">
 
-# ⚓ MT RINA Cargo Plan
+# ⚓ MT RINA (IMO: 9152820) Cargo Plan
 
 **Грузовой план танкера / Tanker Cargo Plan**
 
