@@ -47,7 +47,7 @@ volumes, filling percentages and actual densities, shows a visual tank plan and 
 - **Product management** — catalog of cargoes (name, density at 15 °C, color coding), stored in `settings.json`.
 - **Tank capacities** — set maximum tank volumes used for fill-percentage calculations.
 - **Printing** — print preview of the cargo plan (voyage header, tank scheme, summary table).
-- **File operations** — New / Open / Save / **Save As** — plans are stored as JSON files.
+- **File operations** — New / Open / Save / Save As — plans are stored as JSON files.
 
 ### 🛠 Technology
 
@@ -134,7 +134,7 @@ If you close the app with unsaved changes, you will be asked to save them.
 - **Управление продуктами** — справочник грузов (наименование, плотность при 15 °C, цветовая кодировка), сохраняется в `settings.json`.
 - **Ёмкости танков** — задание максимальных объёмов танков для расчёта процента заполнения.
 - **Печать** — предпросмотр печатной формы грузового плана (заголовок рейса, схема танков, сводная таблица).
-- **Работа с файлами** — New / Open / Save / **Save As** — планы хранятся в формате JSON.
+- **Работа с файлами** — New / Open / Save / Save As — планы хранятся в формате JSON.
 
 ### 🛠 Технологии
 
@@ -204,6 +204,6 @@ dotnet run
 
 <div align="center">
 
-Made with ❤️ for seafarers · Сделано с ❤️ для моряков
+Made for seafarers · Сделано для моряков
 
 </div>
