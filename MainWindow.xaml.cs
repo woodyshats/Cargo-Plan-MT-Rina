@@ -111,95 +111,35 @@ namespace CargoPlanApp
             FlowDocument flowDoc = new FlowDocument();
             flowDoc.PageWidth = 1122;
             flowDoc.PageHeight = 793;
+            flowDoc.PagePadding = new Thickness(15);
             flowDoc.ColumnWidth = double.PositiveInfinity;
             flowDoc.FontFamily = new FontFamily("Segoe UI");
-            flowDoc.FontSize = 14;
+            flowDoc.FontSize = 10;
             flowDoc.Foreground = Brushes.Black;
             flowDoc.Background = Brushes.White;
 
-            // Заголовок
-            string headerText1 = $"{vm.PlanType}";
-            Paragraph headerParagraph1 = new Paragraph(new Run(headerText1));
-            headerParagraph1.FontSize = 16;
-            headerParagraph1.FontWeight = FontWeights.Bold;
-            headerParagraph1.Margin = new Thickness(20, 10, 20, 5);
-            flowDoc.Blocks.Add(headerParagraph1);
+            // Красивая версия cargo plan для печати (как на образце)
+            double planWidth = 1050;
+            var printView = new CargoPlanPrintView();
+            printView.Width = planWidth;
+            printView.DataContext = vm;
+            // Явная перестройка с корректной шириной (DataContext уже с Width)
+            printView.Rebuild();
+            printView.Measure(new Size(planWidth, double.PositiveInfinity));
+            double desiredHeight = printView.DesiredSize.Height;
+            if (double.IsNaN(desiredHeight) || double.IsInfinity(desiredHeight) || desiredHeight < 400) desiredHeight = 650;
+            if (desiredHeight > 1200) desiredHeight = 1200;
+            printView.Arrange(new Rect(0, 0, planWidth, desiredHeight));
+            printView.UpdateLayout();
 
-            // Заголовок
-            string headerText = $"Voyage: {vm.Voyage} | Date: {vm.Date:yyyy-MM-dd} | Port of Loading: {vm.PortOfLoading} | Terminal: {vm.Terminal} | Port of Discharge: {vm.PortOfDischarge}";
-            Paragraph headerParagraph = new Paragraph(new Run(headerText));
-            headerParagraph.FontSize = 16;
-            headerParagraph.FontWeight = FontWeights.Bold;
-            headerParagraph.Margin = new Thickness(20, 10, 20, 5);
-            flowDoc.Blocks.Add(headerParagraph);
-
-            // Заголовок
-            string headerText2 = $"Maximum Draft: {vm.Draft?.ToString("F2") ?? "-"} m | Water Density: {vm.WaterDensity?.ToString("F3") ?? "-"}";
-            Paragraph headerParagraph2 = new Paragraph(new Run(headerText2));
-            headerParagraph2.FontSize = 16;
-            headerParagraph2.FontWeight = FontWeights.Bold;
-            headerParagraph2.Margin = new Thickness(20, 10, 20, 5);
-            flowDoc.Blocks.Add(headerParagraph2);
-
-            // Карго-план
-            var tempCargoPlan = new CargoPlanView { DataContext = vm };
-            double planWidth = 1000;
-            double planHeight = 350;
-            tempCargoPlan.Width = planWidth;
-            tempCargoPlan.Height = planHeight;
-            tempCargoPlan.Measure(new Size(planWidth, planHeight));
-            tempCargoPlan.Arrange(new Rect(0, 0, planWidth, planHeight));
-            tempCargoPlan.UpdateLayout();
-
-            var planBitmap = RenderVisualToBitmap(tempCargoPlan, planWidth, planHeight, Colors.White);
-            Image planImage = new Image { Source = planBitmap, Width = planWidth, Height = planHeight };
+            // Рендер без повторного InvalidateMeasure (чтобы не триггерить Build во время layout)
+            var planBitmap = RenderToBitmapNoReMeasure(printView, planWidth, desiredHeight, Colors.White);
+            Image planImage = new Image { Source = planBitmap, Width = planWidth, Height = desiredHeight, Stretch = Stretch.Uniform };
             BlockUIContainer planContainer = new BlockUIContainer(planImage);
-            planContainer.Margin = new Thickness(20, 10, 20, 10);
+            planContainer.Margin = new Thickness(0);
             flowDoc.Blocks.Add(planContainer);
 
-            // Сводная таблица
-            Table summaryTable = new Table();
-            summaryTable.Background = Brushes.White;
-            summaryTable.Foreground = Brushes.Black;
-            summaryTable.BorderBrush = Brushes.Black;
-            summaryTable.BorderThickness = new Thickness(1);
-            summaryTable.CellSpacing = 0;
-
-            summaryTable.Columns.Add(new TableColumn { Width = new GridLength(180) });
-            summaryTable.Columns.Add(new TableColumn { Width = new GridLength(120) });
-            summaryTable.Columns.Add(new TableColumn { Width = new GridLength(120) });
-            summaryTable.Columns.Add(new TableColumn { Width = new GridLength(120) });
-            summaryTable.Columns.Add(new TableColumn { Width = new GridLength(120) });
-
-            TableRowGroup headerGroup = new TableRowGroup();
-            TableRow headerRow = new TableRow();
-            headerRow.Background = new SolidColorBrush(Color.FromRgb(200, 200, 200));
-            AddTableCell(headerRow, "Grade", FontWeights.Bold);
-            AddTableCell(headerRow, "Density at 15", FontWeights.Bold);
-            AddTableCell(headerRow, "Weight VAC, mt", FontWeights.Bold);
-            AddTableCell(headerRow, "Volume, m3", FontWeights.Bold);
-            AddTableCell(headerRow, "Avg Temp", FontWeights.Bold);
-            headerGroup.Rows.Add(headerRow);
-
-            TableRowGroup dataGroup = new TableRowGroup();
-            foreach (var item in vm.GradeSummaries)
-            {
-                TableRow row = new TableRow();
-                if (item.Grade == "TOTAL")
-                    row.FontWeight = FontWeights.Bold;
-                AddTableCell(row, item.Grade, FontWeights.Normal);
-                AddTableCell(row, item.Density15.ToString("F4"), FontWeights.Normal);
-                AddTableCell(row, item.TotalWeight.ToString("F3"), FontWeights.Normal);
-                AddTableCell(row, item.TotalVolume.ToString("F3"), FontWeights.Normal);
-                AddTableCell(row, item.AvgTemperature.ToString("F1"), FontWeights.Normal);
-                dataGroup.Rows.Add(row);
-            }
-            summaryTable.RowGroups.Add(headerGroup);
-            summaryTable.RowGroups.Add(dataGroup);
-
-            flowDoc.Blocks.Add(summaryTable);
-
-            tempCargoPlan.DataContext = null;
+            printView.DataContext = null;
             GC.Collect();
 
             PrintPreviewWindow previewWindow = new PrintPreviewWindow(flowDoc);
@@ -236,6 +176,22 @@ namespace CargoPlanApp
             rtb.Render(backgroundVisual);
             rtb.Render(visual);
 
+            return rtb;
+        }
+
+        private BitmapSource RenderToBitmapNoReMeasure(UIElement visual, double width, double height, Color backgroundColor)
+        {
+            // Visual уже измерен и зааранжен - просто рендерим без повторного Measure (исключает reentrancy Build)
+            int w = Math.Max(1, (int)Math.Ceiling(width));
+            int h = Math.Max(1, (int)Math.Ceiling(height));
+            RenderTargetBitmap rtb = new RenderTargetBitmap(w, h, 96, 96, PixelFormats.Pbgra32);
+            DrawingVisual backgroundVisual = new DrawingVisual();
+            using (DrawingContext dc = backgroundVisual.RenderOpen())
+            {
+                dc.DrawRectangle(new SolidColorBrush(backgroundColor), null, new Rect(0, 0, width, height));
+            }
+            rtb.Render(backgroundVisual);
+            rtb.Render(visual);
             return rtb;
         }
 

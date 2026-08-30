@@ -1,0 +1,7 @@
+<UserControl x:Class="CargoPlanApp.Views.CargoPlanPrintView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="White"
+             FontFamily="Segoe UI">
+    <Grid x:Name="RootGrid" Background="White"/>
+</UserControl>
