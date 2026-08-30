@@ -105,12 +105,13 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="250"/>                             
                             </Grid.ColumnDefinitions>
-                            <DataGrid Grid.Column="0" ItemsSource="{Binding CargoTanks}" AutoGenerateColumns="False"
-                                      CanUserAddRows="False" CanUserDeleteRows="False"
-                                      SelectionUnit="Cell"
-                                      KeyboardNavigation.TabNavigation="Cycle"
-                                      CellStyle="{StaticResource EditableCellStyle}"
-                                      Style="{StaticResource MaterialDesignDataGrid}">
+                            <DataGrid x:Name="CargoDataGrid" Grid.Column="0" ItemsSource="{Binding CargoTanks}" AutoGenerateColumns="False"
+                                       CanUserAddRows="False" CanUserDeleteRows="False"
+                                       SelectionUnit="Cell"
+                                       SelectionMode="Single"
+                                       KeyboardNavigation.TabNavigation="None"
+                                       CellStyle="{StaticResource EditableCellStyle}"
+                                       Style="{StaticResource MaterialDesignDataGrid}">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Tank No" Binding="{Binding TankNo}" IsReadOnly="True"/>
                                     <DataGridTemplateColumn Header="Grade">
