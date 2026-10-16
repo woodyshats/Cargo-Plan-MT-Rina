@@ -4,7 +4,7 @@ using System.Windows;
 
 namespace CargoPlanApp.Views
 {
-    public partial class TankVolumesWindow : Window
+    public partial class TankVolumesWindow : Wpf.Ui.Controls.FluentWindow
     {
         public ObservableCollection<TankVolumeItem> Items { get; set; }
         private Dictionary<string, double> _volumes;

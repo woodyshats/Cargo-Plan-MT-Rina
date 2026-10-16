@@ -1,0 +1,99 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Убирает пунктирную/скруглённую рамку фокуса у НЕ-полей ввода.
+         Применяется через BasedOn у стилей ячеек (EditableCellStyle). -->
+    <Style x:Key="NoFocusVisual" TargetType="{x:Type Control}">
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+    </Style>
+
+    <!-- Ячейка. Наследуемся от нативной ячейки WPF-UI (DefaultDataGridCellStyle):
+         её шаблон привязывает Horizontal/VerticalContentAlignment (нужно для
+         центрирования, п.6) и жёстко задаёт фон Transparent — поэтому ячейки не
+         подсвечиваются при выделении кликом (п.5). Read-only ячейки при клике
+         визуально не выделяются; поля ввода показывают фокус собственным контролом. -->
+    <Style x:Key="EditableCellStyle" TargetType="{x:Type DataGridCell}"
+           BasedOn="{StaticResource DefaultDataGridCellStyle}">
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <!-- Страховка: даже если шаблон начнёт учитывать Background, выделение
+             не будет подсвечиваться (п.5). Возможность выбора Tab/стрелками
+             (Excel-навигация 6.3b/6.4) при этом сохраняется. -->
+        <Style.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderBrush" Value="Transparent"/>
+                <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Заголовок столбца в стиле Fluent (базовый шаблон WPF-UI, но без внешних
+         отступов: Margin=0, чтобы шапка совпадала по высоте с ColumnHeaderHeight).
+         Этап 10a: шапка полностью неактивна и сливается с фоном таблицы.
+         IsHitTestVisible=False делает её «прозрачной» для мыши: базовый шаблон
+         WPF-UI содержит триггеры IsMouseOver/IsPressed (перекрашивают
+         HeaderBorder), но при IsHitTestVisible=False они никогда не срабатывают —
+         нет hover, клика, drag, курсора-ресайза, контекстного меню. -->
+    <Style x:Key="FluentDataGridColumnHeaderStyle" TargetType="{x:Type DataGridColumnHeader}"
+           BasedOn="{StaticResource DefaultDataGridColumnHeaderStyle}">
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Padding" Value="8,0"/>
+        <!-- Базовый стиль задаёт MinHeight=32, из-за чего ColumnHeaderHeight="0"
+             (скрытая шапка Ballast-таблицы) игнорировался. -->
+        <Setter Property="MinHeight" Value="0"/>
+        <!-- п.1: фон шапки = фону таблицы. CardBackground полупрозрачный, поэтому
+             над фоном DataGrid он давал «второй слой» и шапка отличалась. Transparent
+             показывает ровно тот же фон таблицы, что и тело (без второго слоя). -->
+        <Setter Property="Background" Value="Transparent"/>
+        <!-- п.1: только нижний разделитель, как у строк; верх/лево/право — 0. -->
+        <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}"/>
+        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <!-- п.6: заголовки выровнены по центру. -->
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <!-- п.2: полная неактивность шапки. -->
+        <Setter Property="IsHitTestVisible" Value="False"/>
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Cursor" Value="Arrow"/>
+        <Setter Property="ContextMenu" Value="{x:Null}"/>
+    </Style>
+
+    <!-- Строка: без внешних отступов, с тонким горизонтальным разделителем.
+         Margin=0 обязателен: базовый стиль задаёт Margin=0,2, что сломало бы
+         выравнивание блока Ballast и абсолютные высоты из этапа 7a. -->
+    <Style x:Key="FluentDataGridRowStyle" TargetType="{x:Type DataGridRow}"
+           BasedOn="{StaticResource DefaultDataGridRowStyle}">
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}"/>
+        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+    </Style>
+
+    <!-- Базовый стиль таблицы: нативный шаблон WPF-UI (скроллбары, шапка, выделение)
+         + фон карточки. Явный стиль задаёт все три части (шапка/строка/ячейка). -->
+    <Style x:Key="FluentDataGridStyle" TargetType="{x:Type DataGrid}"
+           BasedOn="{StaticResource DefaultDataGridStyle}">
+        <Setter Property="Background" Value="{DynamicResource CardBackground}"/>
+        <Setter Property="RowBackground" Value="Transparent"/>
+        <Setter Property="AlternatingRowBackground" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="GridLinesVisibility" Value="None"/>
+        <!-- Базовый WPF-UI-стиль оставляет HeadersVisibility=All, из-за чего в левом
+             верхнем углу появляется кнопка «выделить всё» (артефакт). Нужны только заголовки столбцов. -->
+        <Setter Property="HeadersVisibility" Value="Column"/>
+        <!-- п.6: единые ограничения для всех таблиц. -->
+        <Setter Property="CanUserSortColumns" Value="False"/>
+        <Setter Property="CanUserResizeColumns" Value="False"/>
+        <!-- п.6: фон шапки = фон таблицы (CardBackground). -->
+        <Setter Property="CellStyle" Value="{StaticResource EditableCellStyle}"/>
+        <Setter Property="RowStyle" Value="{StaticResource FluentDataGridRowStyle}"/>
+        <Setter Property="ColumnHeaderStyle" Value="{StaticResource FluentDataGridColumnHeaderStyle}"/>
+    </Style>
+</ResourceDictionary>

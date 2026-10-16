@@ -4,7 +4,7 @@ using System.Windows.Documents;
 
 namespace CargoPlanApp.Views
 {
-    public partial class PrintPreviewWindow : Window
+    public partial class PrintPreviewWindow : Wpf.Ui.Controls.FluentWindow
     {
         private FlowDocument _document;
 

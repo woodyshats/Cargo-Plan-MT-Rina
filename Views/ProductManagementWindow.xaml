@@ -1,32 +1,46 @@
-﻿<Window x:Class="CargoPlanApp.Views.ProductManagementWindow"
+﻿<ui:FluentWindow x:Class="CargoPlanApp.Views.ProductManagementWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         xmlns:converters="clr-namespace:CargoPlanApp.Converters"
+        xmlns:behaviors="clr-namespace:CargoPlanApp.Behaviors"
         xmlns:local="clr-namespace:CargoPlanApp.Views"
         Title="Products" Height="450" Width="650"
-        ResizeMode="NoResize" WindowStyle="ToolWindow"
+        ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner"
-        Background="{DynamicResource MaterialDesignPaper}">
-    <Grid Margin="10">
+        ExtendsContentIntoTitleBar="True"
+        WindowBackdropType="Mica"
+        WindowCornerPreference="Round"
+        TextElement.Foreground="{DynamicResource App.Foreground}">
+    <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <DataGrid x:Name="ProductsGrid" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
-                  Style="{StaticResource MaterialDesignDataGrid}">
+        <ui:TitleBar Grid.Row="0" Title="Products" ShowMinimize="False" ShowMaximize="False"/>
+        <DataGrid x:Name="ProductsGrid" Grid.Row="1" Margin="10,0,10,0"
+                  behaviors:ExcelNavigationBehavior.IsEnabled="True"
+                  AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
+                  SelectionUnit="Cell" SelectionMode="Single"
+                  KeyboardNavigation.TabNavigation="None"
+                  FocusVisualStyle="{x:Null}"
+                  Background="{DynamicResource CardBackground}"
+                  RowBackground="Transparent"
+                  AlternatingRowBackground="Transparent"
+                  Style="{StaticResource FluentDataGridStyle}">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Grade Name" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
-                <DataGridTemplateColumn Header="Density at 15°C" Width="130">
+                <DataGridTextColumn Header="Grade Name" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Width="*" CanUserSort="False"/>
+                <DataGridTemplateColumn Header="Density at 15°C" Width="*" CanUserSort="False">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBox Text="{Binding Density15, UpdateSourceTrigger=LostFocus}"
-                                     Style="{StaticResource MaterialDesignTextBox}" Width="100"
-                                     LostFocus="DensityTextBox_LostFocus"/>
+                            <ui:TextBox Text="{Binding Density15, UpdateSourceTrigger=LostFocus}"
+                                        Width="100"
+                                        LostFocus="DensityTextBox_LostFocus"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Color" Width="120">
+                <DataGridTemplateColumn Header="Color" Width="*" CanUserSort="False">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Border Background="{Binding Color, Converter={StaticResource ColorToBrushConverter}}"
@@ -39,13 +53,13 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,10,0,0">
-            <Button Content="Add" Click="Add_Click" Style="{StaticResource MaterialDesignFlatButton}" Margin="5"/>
-            <Button Content="Delete" Click="Delete_Click" Style="{StaticResource MaterialDesignFlatButton}" Margin="5"/>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left" Margin="10,10,0,10">
+            <ui:Button Content="Add" Click="Add_Click" Margin="5"/>
+            <ui:Button Content="Delete" Click="Delete_Click" Margin="5"/>
         </StackPanel>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
-            <Button Content="Save" Click="Save_Click" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5"/>
-            <Button Content="Cancel" Click="Cancel_Click" Style="{StaticResource MaterialDesignFlatButton}" Margin="5"/>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,10,10">
+            <ui:Button Content="Save" Click="Save_Click" Appearance="Primary" Margin="5"/>
+            <ui:Button Content="Cancel" Click="Cancel_Click" Margin="5"/>
         </StackPanel>
     </Grid>
-</Window>
+</ui:FluentWindow>

@@ -9,7 +9,7 @@ using CargoPlanApp.Models;
 
 namespace CargoPlanApp.Views
 {
-    public partial class ProductManagementWindow : Window
+    public partial class ProductManagementWindow : Wpf.Ui.Controls.FluentWindow
     {
         public ObservableCollection<Product> Products { get; set; }
 
@@ -87,10 +87,22 @@ namespace CargoPlanApp.Views
                 }
             }
 
+            var duplicateName = Products
+                .Where(p => !string.IsNullOrWhiteSpace(p.Name))
+                .GroupBy(p => p.Name)
+                .FirstOrDefault(g => g.Count() > 1);
+            if (duplicateName != null)
+            {
+                MessageBox.Show($"Product name '{duplicateName.Key}' is used more than once. Names must be unique.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             var mainVm = ((MainWindow)Owner).DataContext as ViewModels.MainViewModel;
             if (mainVm == null) return;
 
-            var originalDict = mainVm.Products.ToDictionary(p => p.Name);
+            var originalDict = mainVm.Products
+                .GroupBy(p => p.Name)
+                .ToDictionary(g => g.Key, g => g.First());
             var editedDict = Products.Where(p => !string.IsNullOrWhiteSpace(p.Name)).ToDictionary(p => p.Name);
 
             for (int i = mainVm.Products.Count - 1; i >= 0; i--)

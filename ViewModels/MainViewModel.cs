@@ -162,10 +162,37 @@ namespace CargoPlanApp.ViewModels
 
         private void UpdateProductNames()
         {
-            AllProductNames.Clear();
-            AllProductNames.Add("Empty");
+            // Инкрементальная синхронизация вместо Clear()+Add(): Reset-уведомление
+            // заставляет ComboBox (SelectedValue ← SelectedProductName, TwoWay) сбрасывать
+            // выбор у всех танков. Add/Remove/Move сохраняют выбранное значение.
+            var desired = new List<string>(Products.Count + 1) { "Empty" };
             foreach (var p in Products)
-                AllProductNames.Add(p.Name);
+                desired.Add(p.Name);
+
+            for (int i = AllProductNames.Count - 1; i >= 0; i--)
+            {
+                if (!desired.Contains(AllProductNames[i]))
+                    AllProductNames.RemoveAt(i);
+            }
+
+            for (int i = 0; i < desired.Count; i++)
+            {
+                if (i >= AllProductNames.Count)
+                {
+                    AllProductNames.Add(desired[i]);
+                    continue;
+                }
+                if (AllProductNames[i] == desired[i]) continue;
+
+                int existing = AllProductNames.IndexOf(desired[i]);
+                if (existing >= 0)
+                    AllProductNames.Move(existing, i);
+                else
+                    AllProductNames.Insert(i, desired[i]);
+            }
+
+            while (AllProductNames.Count > desired.Count)
+                AllProductNames.RemoveAt(AllProductNames.Count - 1);
         }
 
         public void UpdateSummaries()
