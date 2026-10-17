@@ -76,18 +76,7 @@ CargoPlanApp/
 
 ### 🔨 Build & Run
 
-Requires Windows 10/11 and the [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
-(.NET Desktop Runtime 9.0 is enough to run).
-
-```bash
-git clone https://github.com/woodyshats/Cargo-Plan-MT-Rina.git
-cd Cargo-Plan-MT-Rina
-
-dotnet build
-dotnet run
-```
-
-Or open `CargoPlanApp.sln` in Visual Studio 2022 and press F5.
+Just download Latest Release, unpack it andd start CargoPlanApp.exe
 
 ### 🚀 Usage
 
@@ -167,18 +156,7 @@ CargoPlanApp/
 
 ### 🔨 Сборка и запуск
 
-Требуется Windows 10/11 и [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
-(для запуска достаточно .NET Desktop Runtime 9.0).
-
-```bash
-git clone https://github.com/woodyshats/Cargo-Plan-MT-Rina.git
-cd Cargo-Plan-MT-Rina
-
-dotnet build
-dotnet run
-```
-
-Или откройте `CargoPlanApp.sln` в Visual Studio 2022 и нажмите F5.
+Просто загрузить последний релиз, распаковать и запустить CargoPlanApp.exe
 
 ### 🚀 Использование
 
